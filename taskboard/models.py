@@ -12,6 +12,12 @@ class Project(Model):
     members = UnicodeSetAttribute(null=True)
     owner = UnicodeAttribute()
 
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'name', self.name
+        yield 'owner', self.owner
+        yield 'members', [] if self.members is None else list(self.members)
+
 class User(Model):
     class Meta:
         table_name = 'users'
@@ -26,6 +32,12 @@ class Swimlane(MapAttribute):
     description = UnicodeAttribute(null=True)
     points = NumberAttribute()
 
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'name', self.name
+        yield 'description', self.description if self.description is not None else ''
+        yield 'points', self.points
+
 class Sprint(Model):
     class Meta:
         table_name = 'sprints'
@@ -37,6 +49,13 @@ class Sprint(Model):
     end_date = UTCDateTimeAttribute()
     name = UnicodeAttribute()
     swimlanes = ListAttribute(of=Swimlane, null=True)
+
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'name', self.name
+        yield 'start_date', self.start_date
+        yield 'end_date', self.end_date
+        yield 'swimlanes', [dict(x) for x in self.swimlanes] if self.swimlanes is not None else []
 
 class Task(Model):
     class Meta:
@@ -53,3 +72,14 @@ class Task(Model):
     planned_points = NumberAttribute(null=True)
     points = NumberAttribute(null=True)
     assigned_members = UnicodeSetAttribute(null=True)
+
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'sprint_id', self.sprint_id
+        yield 'swimlane_id', self.swimlane_id
+        yield 'state', self.state
+        yield 'name', self.name
+        yield 'description', self.description
+        yield 'planned_points', self.planned_points
+        yield 'points', self.points
+        yield 'assigned_members', list(self.assigned_members) if self.assigned_members is not None else []
