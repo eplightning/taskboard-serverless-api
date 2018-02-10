@@ -22,7 +22,7 @@ def new_task(project):
     project = helpers.require_project(project)
     input = helpers.get_input()
 
-    sprint = Sprint.get(project, input['sprint_id'])
+    sprint = Sprint.get(project.id, input['sprint_id'])
 
     id = str(uuid.uuid4())
 

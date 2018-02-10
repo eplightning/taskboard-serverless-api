@@ -35,7 +35,7 @@ class Swimlane(MapAttribute):
     description = UnicodeAttribute(null=True)
     points = NumberAttribute(null=True)
 
-    def __iter__(self):
+    def output_dict(self):
         yield 'id', self.id
         yield 'name', self.name
         yield 'description', self.description if self.description is not None else ''
@@ -56,8 +56,8 @@ class Sprint(Model):
     def __iter__(self):
         yield 'id', self.id
         yield 'name', self.name
-        yield 'start_date', self.start_date
-        yield 'end_date', self.end_date
+        yield 'start_date', self.start_date.strftime('%Y-%m-%d')
+        yield 'end_date', self.end_date.strftime('%Y-%m-%d')
         yield 'swimlanes', [dict(x) for x in self.swimlanes] if self.swimlanes is not None else []
 
 class Task(Model):

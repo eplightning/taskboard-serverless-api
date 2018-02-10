@@ -9,7 +9,7 @@ def get_swimlanes(project, sprint):
     sprint = Sprint.get(project.id, str(sprint))
     swimlanes = sprint.swimlanes if sprint.swimlanes is not None else []
 
-    return jsonify([dict(x) for x in swimlanes])
+    return jsonify([dict(x.output_dict()) for x in swimlanes])
 
 @app.route('/projects/<uuid:project>/sprints/<uuid:sprint>/swimlanes/<uuid:id>')
 def get_swimlane(project, sprint, id):
@@ -19,7 +19,7 @@ def get_swimlane(project, sprint, id):
     swimlanes = sprint.swimlanes if sprint.swimlanes is not None else []
     swimlane = next(x for x in swimlanes if x.id == id)
     
-    return jsonify(dict(swimlane))
+    return jsonify(dict(swimlane.output_dict()))
 
 @app.route('/projects/<uuid:project>/sprints/<uuid:sprint>/swimlanes', methods=['POST'])
 def new_swimlane(project, sprint):
@@ -39,7 +39,7 @@ def new_swimlane(project, sprint):
     sprint.swimlanes = swimlanes
     sprint.save()
 
-    return jsonify(dict(swimlane))
+    return jsonify(dict(swimlane.output_dict()))
 
 @app.route('/projects/<uuid:project>/sprints/<uuid:sprint>/swimlanes/<uuid:id>', methods=['PUT'])
 def edit_swimlane(project, sprint, id):
@@ -61,7 +61,7 @@ def edit_swimlane(project, sprint, id):
     sprint.swimlanes = swimlanes
     sprint.save()
 
-    return jsonify(dict(swimlane))
+    return jsonify(dict(swimlane.output_dict()))
 
 @app.route('/projects/<uuid:project>/sprints/<uuid:sprint>/swimlanes/<uuid:id>', methods=['DELETE'])
 def delete_swimlane(project, sprint, id):

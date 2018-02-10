@@ -28,7 +28,7 @@ def new_sprint(project):
     end_date = datetime.datetime.strptime(input['end_date'], '%Y-%m-%d')
     name = input['name']
 
-    sprint = Sprint(project, id, start_date=start_date, end_date=end_date, name=name)
+    sprint = Sprint(project.id, id, start_date=start_date, end_date=end_date, name=name)
     sprint.save()
 
     return jsonify(dict(sprint))
