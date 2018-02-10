@@ -7,6 +7,9 @@
         "project_name": "taskboard-api",
         "runtime": "python3.6",
         "s3_bucket": "zappa-w0cf2qfqf",
-        "keep_warm": false
+        "keep_warm": false,
+        "authorizer": {
+            "function": "taskboard.authorizer.aws_authorize"
+        }
     }
 }

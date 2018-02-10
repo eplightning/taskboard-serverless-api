@@ -97,4 +97,4 @@ def delete_project(id):
 
     project.delete()
 
-    return ''
+    return '', 201
