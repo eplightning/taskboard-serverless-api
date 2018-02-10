@@ -6,29 +6,32 @@ JWKS_URL = 'https://tb-epl.eu.auth0.com/.well-known/jwks.json'
 AUDIENCE = 'sEpZ_rOV6iRhOISZEzfFQcDbsykfKYss'
 
 def aws_authorize(event, context):
-    claims = get_claims(event['authorizationToken'])
-    principalId = claims['email']
+    try:
+        claims = get_claims(event['authorizationToken'][7:])
+        principalId = claims['email']
 
-    tmp = event['methodArn'].split(':')
-    apiGatewayArnTmp = tmp[5].split('/')
-    awsAccountId = tmp[4]
+        tmp = event['methodArn'].split(':')
+        apiGatewayArnTmp = tmp[5].split('/')
+        awsAccountId = tmp[4]
 
-    policy = AuthPolicy(principalId, awsAccountId)
-    policy.restApiId = apiGatewayArnTmp[0]
-    policy.region = tmp[3]
-    policy.stage = apiGatewayArnTmp[1]
-    policy.allowAllMethods()
+        policy = AuthPolicy(principalId, awsAccountId)
+        policy.restApiId = apiGatewayArnTmp[0]
+        policy.region = tmp[3]
+        policy.stage = apiGatewayArnTmp[1]
+        policy.allowAllMethods()
 
-    authResponse = policy.build()
+        authResponse = policy.build()
 
-    context = {
-        'name': claims['nickname'],
-        'email': claims['email']
-    }
+        context = {
+            'name': claims['nickname'],
+            'email': claims['email']
+        }
 
-    authResponse['context'] = context
+        authResponse['context'] = context
 
-    return authResponse
+        return authResponse
+    except:
+        raise Exception('Unauthorized')
 
 def get_claims(token):
     r = requests.get(JWKS_URL)

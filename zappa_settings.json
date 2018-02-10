@@ -9,7 +9,8 @@
         "s3_bucket": "zappa-w0cf2qfqf",
         "keep_warm": false,
         "authorizer": {
-            "function": "taskboard.authorizer.aws_authorize"
+            "function": "taskboard.authorizer.aws_authorize",
+            "validation_expression": "^Bearer \\w+$"
         }
     }
 }
