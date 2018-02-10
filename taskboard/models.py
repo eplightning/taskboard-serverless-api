@@ -16,7 +16,10 @@ class Project(Model):
         yield 'id', self.id
         yield 'name', self.name
         yield 'owner', self.owner
-        yield 'members', [] if self.members is None else list(self.members)
+        yield 'members', list(self.members) if self.members is not None else []
+
+    def all_members(self):
+        return (self.members if self.members is not None else set()) | {self.owner}
 
 class User(Model):
     class Meta:
@@ -30,7 +33,7 @@ class Swimlane(MapAttribute):
     id = UnicodeAttribute()
     name = UnicodeAttribute()
     description = UnicodeAttribute(null=True)
-    points = NumberAttribute()
+    points = NumberAttribute(null=True)
 
     def __iter__(self):
         yield 'id', self.id
