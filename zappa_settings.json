@@ -10,7 +10,7 @@
         "keep_warm": false,
         "authorizer": {
             "function": "taskboard.authorizer.aws_authorize",
-            "validation_expression": "^Bearer \\w+$"
+            "validation_expression": "^Bearer .+$"
         }
     }
 }
