@@ -11,6 +11,9 @@
         "authorizer": {
             "function": "taskboard.authorizer.aws_authorize",
             "validation_expression": "^Bearer .+$"
+        },
+        "context_header_mappings": {
+            "user_email": "authorizer.email"
         }
     }
 }
