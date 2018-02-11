@@ -2,7 +2,6 @@ from taskboard.models import Project
 from flask import abort, request
 
 def get_user_email():
-    return 'wrexdot@gmail.com'
     return request.headers.get('user_email')
 
 def require_project(id):
