@@ -1,6 +1,7 @@
 from pynamodb.models import Model
 from pynamodb.attributes import ListAttribute, UTCDateTimeAttribute, NumberAttribute, \
     MapAttribute, UnicodeAttribute, UnicodeSetAttribute
+from pynamodb.indexes import LocalSecondaryIndex, AllProjection
 
 class Project(Model):
     class Meta:
@@ -35,8 +36,10 @@ class Swimlane(MapAttribute):
     description = UnicodeAttribute(null=True)
     points = NumberAttribute(null=True)
 
-    def output_dict(self):
+    def output_dict(self, sprint):
         yield 'id', self.id
+        yield 'sprint_id', sprint.id
+        yield 'project_id', sprint.project_id
         yield 'name', self.name
         yield 'description', self.description if self.description is not None else ''
         yield 'points', self.points
@@ -59,7 +62,15 @@ class Sprint(Model):
         yield 'project_id', self.project_id
         yield 'start_date', self.start_date.strftime('%Y-%m-%d')
         yield 'end_date', self.end_date.strftime('%Y-%m-%d')
-        yield 'swimlanes', [dict(x.output_dict()) for x in self.swimlanes] if self.swimlanes is not None else []
+        yield 'swimlanes', [dict(x.output_dict(self)) for x in self.swimlanes] if self.swimlanes is not None else []
+
+class TaskSprintIndex(LocalSecondaryIndex):
+    class Meta:
+        index_name = 'project_id-sprint_id-index'
+        projection = AllProjection()
+
+    project_id = UnicodeAttribute(hash_key=True)
+    sprint_id = UnicodeAttribute(range_key=True)
 
 class Task(Model):
     class Meta:
@@ -76,6 +87,7 @@ class Task(Model):
     planned_points = NumberAttribute(null=True)
     points = NumberAttribute(null=True)
     assigned_members = UnicodeSetAttribute(null=True)
+    sprint_index = TaskSprintIndex()
 
     def __iter__(self):
         yield 'id', self.id

@@ -2,7 +2,7 @@ import uuid
 import datetime
 from taskboard import app, helpers
 from flask import jsonify, request, abort
-from taskboard.models import Project, Sprint, User
+from taskboard.models import Project, Sprint, User, Task
 
 @app.route('/projects/<uuid:project>/sprints')
 def get_sprints(project):
@@ -17,6 +17,24 @@ def get_sprint(project, id):
     sprint = Sprint.get(project.id, str(id))
     
     return jsonify(dict(sprint))
+
+@app.route('/projects/<uuid:project>/sprints/<uuid:id>/board')
+def get_sprint_with_tasks(project, id):
+    project = helpers.require_project(project)
+    sprint = Sprint.get(project.id, str(id))
+    
+    output = dict(sprint)
+    output['tasks'] = [dict(x) for x in Task.sprint_index.query(project.id, Task.sprint_id == sprint.id)]
+
+    return jsonify(output)
+
+@app.route('/projects/<uuid:project>/sprints/<uuid:id>/tasks')
+def get_sprint_tasks(project, id):
+    project = helpers.require_project(project)
+    
+    tasks = [dict(x) for x in Task.sprint_index.query(project.id, Task.sprint_id == str(id))]
+
+    return jsonify(tasks)
 
 @app.route('/projects/<uuid:project>/sprints', methods=['POST'])
 def new_sprint(project):
