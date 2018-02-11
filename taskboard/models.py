@@ -56,6 +56,7 @@ class Sprint(Model):
     def __iter__(self):
         yield 'id', self.id
         yield 'name', self.name
+        yield 'project_id', self.project_id
         yield 'start_date', self.start_date.strftime('%Y-%m-%d')
         yield 'end_date', self.end_date.strftime('%Y-%m-%d')
         yield 'swimlanes', [dict(x.output_dict()) for x in self.swimlanes] if self.swimlanes is not None else []
@@ -78,6 +79,7 @@ class Task(Model):
 
     def __iter__(self):
         yield 'id', self.id
+        yield 'project_id', self.project_id
         yield 'sprint_id', self.sprint_id
         yield 'swimlane_id', self.swimlane_id
         yield 'state', self.state
