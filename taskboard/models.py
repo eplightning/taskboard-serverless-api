@@ -58,7 +58,7 @@ class Sprint(Model):
         yield 'name', self.name
         yield 'start_date', self.start_date.strftime('%Y-%m-%d')
         yield 'end_date', self.end_date.strftime('%Y-%m-%d')
-        yield 'swimlanes', [dict(x) for x in self.swimlanes] if self.swimlanes is not None else []
+        yield 'swimlanes', [dict(x.output_dict()) for x in self.swimlanes] if self.swimlanes is not None else []
 
 class Task(Model):
     class Meta:
