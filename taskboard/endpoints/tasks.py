@@ -31,7 +31,7 @@ def new_task(project):
         'swimlane_id': input['swimlane_id'],
         'state': input['state'],
         'name': input['name'],
-        'description': input['description'],
+        'description': input['description'] if input['description'] != '' else None,
         'planned_points': input['planned_points'],
         'points': input['points'],
         'assigned_members': set(input['assigned_members']) & project.all_members()
@@ -55,7 +55,7 @@ def edit_task(project, id):
         # 'swimlane_id': input['swimlane_id'],
         'state': input['state'],
         'name': input['name'],
-        'description': input['description'],
+        'description': input['description'] if input['description'] != '' else None,
         'planned_points': input['planned_points'],
         'points': input['points'],
         'assigned_members': set(input['assigned_members']) & project.all_members()
@@ -86,6 +86,18 @@ def edit_task_position(project, id):
         task.points = 0
     
     task.state = input['state']
+    task.save()
+
+    return jsonify(dict(task))
+
+@app.route('/projects/<uuid:project>/tasks/<uuid:id>/points', methods=['PUT'])
+def edit_task_points(project, id):
+    project = helpers.require_project(project)
+    task = Task.get(project.id, str(id))
+    # points
+    input = helpers.get_input()
+
+    task.points = input['points']
     task.save()
 
     return jsonify(dict(task))
