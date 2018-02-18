@@ -14,6 +14,15 @@
         },
         "context_header_mappings": {
             "user_email": "authorizer.email"
-        }
+        },
+        "events": [{
+            "function": "taskboard.s3_upload.process_upload",
+            "event_source": {
+                  "arn": "arn:aws:s3:::taskboard-upload-dev",
+                  "events": [
+                    "s3:ObjectCreated:*"
+                  ]
+            }
+        }]
     }
 }

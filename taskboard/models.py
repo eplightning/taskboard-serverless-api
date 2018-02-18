@@ -87,6 +87,7 @@ class Task(Model):
     planned_points = NumberAttribute(null=True)
     points = NumberAttribute(null=True)
     assigned_members = UnicodeSetAttribute(null=True)
+    attachments = UnicodeSetAttribute(null=True)
     sprint_index = TaskSprintIndex()
 
     def __iter__(self):
@@ -100,3 +101,4 @@ class Task(Model):
         yield 'planned_points', self.planned_points
         yield 'points', self.points
         yield 'assigned_members', list(self.assigned_members) if self.assigned_members is not None else []
+        yield 'attachments', list(self.attachments) if self.attachments is not None else []

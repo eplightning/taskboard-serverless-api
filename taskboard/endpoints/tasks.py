@@ -2,6 +2,7 @@ import uuid
 from taskboard import app, helpers
 from flask import jsonify, request, abort
 from taskboard.models import Project, Task, User, Sprint, Swimlane
+import boto3
 
 @app.route('/projects/<uuid:project>/tasks')
 def get_tasks(project):
@@ -16,6 +17,40 @@ def get_task(project, id):
     task = Task.get(project.id, str(id))
     
     return jsonify(dict(task))
+
+@app.route('/projects/<uuid:project>/tasks/<uuid:id>/upload')
+def get_upload_url(project, id):
+    project = helpers.require_project(project)
+    task = Task.get(project.id, str(id))
+
+    file_uuid = str(uuid.uuid4())
+    file_name = request.args['filename']
+
+    s3 = boto3.client('s3', 'eu-west-1')
+
+    fields = {
+        'acl': 'public-read',
+        'x-amz-meta-project': project.id,
+        'x-amz-meta-task': task.id,
+        'x-amz-meta-file-name': file_name,
+        'x-amz-meta-file-uuid': file_uuid
+    }
+
+    conditions = [
+        { 'acl': 'public-read' },
+        { 'x-amz-meta-project': project.id },
+        { 'x-amz-meta-task': task.id },
+        { 'x-amz-meta-file-name': file_name },
+        { 'x-amz-meta-file-uuid': file_uuid },
+        ['content-length-range', 1, 1024 * 1024 * 10]
+    ]
+
+    return jsonify(s3.generate_presigned_post(
+        Bucket='taskboard-upload-dev',
+        Key=project.id + '/' + task.id + '/' + file_uuid + '/' + file_name,
+        Fields=fields,
+        Conditions=conditions
+    ))
 
 @app.route('/projects/<uuid:project>/tasks', methods=['POST'])
 def new_task(project):
